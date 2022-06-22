@@ -20,7 +20,9 @@ for i in range(len(PRODUCTION_REQUIREMENT)):
 operation_list = [] #진행해야할 모든 operation , 추후에 정해진 rule에 따라 SCHEDULE's KEY(Machine Number)들의 VALUE로 들어갈 것
 a=0
 for key,value in dict(PRODUCTION_REQUIREMENT).items():
+    value = a + value
     for i in range(a,value):
+        print(i)
         for n in range(int(operation_num_dict[key])):
             operation_list.append('LOT_'+str(i+1)+'-'+key+'_'+str(n+1))
     a = value
