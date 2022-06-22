@@ -5,8 +5,8 @@ import pandas as pd
 from copy import deepcopy as cp
 
 
-operation_num_dict = {"A": 3, "B": 4}
-PRODUCTION_REQUIREMENT = {'A': 10, 'B': 20}
+operation_num_dict = {"A": 3, "B": 3}
+PRODUCTION_REQUIREMENT = {'A': 2, 'B': 2}
 machine_type_num = 2
 not_available_rate = 0.2
 SETUP_TIME = {'homogeneous_setup': 2, 'heterogeneous_setup': 4}
