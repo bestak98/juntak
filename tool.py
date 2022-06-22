@@ -5,11 +5,24 @@ import openpyxl
 wb1 = openpyxl.load_workbook(filename = 'FJS1.xlsx')
 wb2 = openpyxl.load_workbook(filename = 'FJS2.xlsx')
 
+machine_dict= {}
+df = pd.read_excel('./FJS2.xlsx', sheet_name = 'Machine number',header=None, index_col=0)
+cal_machine_dict = df.to_dict()[1]
+a=0
+for type in cal_machine_dict:
+    cal_machine_lst = []
+    for i in range(a+1,int(cal_machine_dict[type][-1])+1):
+        cal_machine_lst.append("M_"+str(i))
+        a=i
+    machine_dict[type] = cal_machine_lst
+
+print(machine_dict)
+
 
 df = pd.read_excel('./FJS2.xlsx', sheet_name = 'Production Requirement',header=None, index_col=0)
 PRODUCTION_REQUIREMENT = df.to_dict()[1]
 # PRODUCTION_REQUIREMENT = {'A' : 10, 'B' : 20}
-print(PRODUCTION_REQUIREMENT)
+
 
 operation_num_dict = {}
 for i in range(len(PRODUCTION_REQUIREMENT)):
@@ -22,24 +35,24 @@ a=0
 for key,value in dict(PRODUCTION_REQUIREMENT).items():
     value = a + value
     for i in range(a,value):
-        print(i)
         for n in range(int(operation_num_dict[key])):
             operation_list.append('LOT_'+str(i+1)+'-'+key+'_'+str(n+1))
     a = value
 print('-OPERATION LIST-\n',operation_list)
     
 
-SCHEDULE = {'M_1': ['LOT_1-A_1', 'LOT_1-A_2', 'LOT_2-B_1'],
-         'M_2': ['LOT_1-A_3'],
-         'M_3': ['LOT_3-B_1', 'LOT_3-B_2', 'LOT_2-B_2'],
-         'M_4': ['LOT_4-C_2', 'LOT_4-C_1']}
+SCHEDULE = {'M_1': ['LOT_1-A_1', 'LOT_1-A_2', 'LOT_1-A_3'],
+         'M_2': ['LOT_2-A_1', 'LOT_2-A_2',' LOT_2-A_3'],
+         'M_3': ['LOT_3-B_1', 'LOT_3-B_2', 'LOT_3-B_3'],
+         'M_4': ['LOT_4-B_1', 'LOT_4-B_2', 'LOT_4-B_3']}
 
 df = pd.read_excel('./FJS1.xlsx', sheet_name = 'Type Processing Time', header=0, index_col=0)
 file_read = df.to_dict()
 PROCESSING_TIME = {}
 for key, value in file_read.items():
-    for op_key, time_value in value.items():
-        PROCESSING_TIME[key+'-'+op_key] = time_value
+    for machine_number in machine_dict[key]:
+        for op_key, time_value in value.items():
+            PROCESSING_TIME[machine_number+'-'+op_key] = time_value
 
 print('-PROCESSING_TIME-\n',PROCESSING_TIME)
 # PROCESSING_TIME = { 'M_1-A_1': 4, 'M_1-A_2': 4, 'M_1-B_1': 5, 'M_2-A_3': 1, 'M_3-B_1': 4, 'M_3-B_2': 2, 'M_4-C_1': 3, 'M_4-C_2': 3}
@@ -129,10 +142,10 @@ while True:
                     setup_time = SETUP_TIME['heterogeneous_setup']
                     job_completion_time_list[JOBTYPE_JOB[operation_cut.split('_')[0]]] += SETUP_TIME['heterogeneous_setup']
                     machine_completion_time_list[int(key.split('_')[1]) - 1] += SETUP_TIME['heterogeneous_setup']
-                print("SETUP", key, operation.split("-")[1], max_value, max_value + setup_time, )
-                print("PROCESSING", key, operation.split("-")[1], max_value + setup_time, max_value + setup_time + processing_time)
+                # print("SETUP", key, operation.split("-")[1], max_value, max_value + setup_time, )
+                # print("PROCESSING", key, operation.split("-")[1], max_value + setup_time, max_value + setup_time + processing_time)
                 del (remain_SCHEDULE_dict[key][0])
-                print(remain_SCHEDULE_dict)
+                # print(remain_SCHEDULE_dict)
                 break
     if is_break:
         break
